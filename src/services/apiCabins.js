@@ -12,7 +12,7 @@ export async function getCabins() {
 }
 
 export async function createEditCabin(newCabin, id) {
-  console.log(newCabin, id);
+  // console.log(newCabin, id);
 
   const hasImagePath = newCabin.image?.startsWith?.(supabaseUrl);
 
@@ -36,6 +36,7 @@ export async function createEditCabin(newCabin, id) {
   // b. EDIT CABIN (notice I'm NOT placing { ...newCabin, image: imagePath } inside an array here)
   if (id) query = query.update({ ...newCabin, image: imagePath }).eq("id", id);
 
+  // I need .select().single() to actually return the newly created element otherwise the data I return would be empty
   const { data, error } = await query.select().single();
 
   if (error) {
@@ -44,6 +45,7 @@ export async function createEditCabin(newCabin, id) {
   }
 
   // 2.Upload image
+  if (hasImagePath) return data;
   const { error: storageError } = await supabase.storage
     .from("cabin-images")
     .upload(imageName, newCabin.image);

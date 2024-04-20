@@ -11,6 +11,10 @@ import { useCreateCabin } from "./useCreateCabin.js";
 import { useEditCabin } from "./useEditCabin.js";
 
 function CreateCabinForm({ cabinToEdit = {} }) {
+  const { isCreating, createCabin } = useCreateCabin();
+  const { isEditing, editCabin } = useEditCabin();
+  const isWorking = isCreating || isEditing;
+
   const { id: editId, ...editValues } = cabinToEdit;
   const isEditSession = Boolean(editId);
 
@@ -20,12 +24,6 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   const { errors } = formState;
 
-  const { isCreating, createCabin } = useCreateCabin();
-
-  const { isEditing, editCabin } = useEditCabin();
-
-  const isWorking = isCreating || isEditing;
-
   function onSubmit(data) {
     const image = typeof data.image === "string" ? data.image : data.image[0];
 
@@ -33,18 +31,14 @@ function CreateCabinForm({ cabinToEdit = {} }) {
       editCabin(
         { newCabinData: { ...data, image }, id: editId },
         {
-          onSuccess: (data) => {
-            reset();
-          },
+          onSuccess: (data) => reset(),
         }
       );
     else
       createCabin(
         { ...data, image: image },
         {
-          onSuccess: (data) => {
-            reset();
-          },
+          onSuccess: (data) => reset(),
         }
       );
   }
@@ -55,7 +49,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit, onError)}>
-      <FormRow lable="Cabin name" error={errors?.name?.message}>
+      <FormRow label="Cabin name" error={errors?.name?.message}>
         <Input
           type="text"
           id="name"
@@ -66,7 +60,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow lable="Maximum capacity" error={errors?.maxCapacity?.message}>
+      <FormRow label="Maximum capacity" error={errors?.maxCapacity?.message}>
         <Input
           type="number"
           id="maxCapacity"
@@ -81,7 +75,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow lable="Regular Price" error={errors?.regularPrice?.message}>
+      <FormRow label="Regular Price" error={errors?.regularPrice?.message}>
         <Input
           type="number"
           id="regularPrice"
@@ -96,7 +90,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow lable="Discount" error={errors?.discount?.message}>
+      <FormRow label="Discount" error={errors?.discount?.message}>
         <Input
           type="number"
           id="discount"
@@ -112,7 +106,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
       </FormRow>
 
       <FormRow
-        lable="Description for website"
+        label="Description for website"
         error={errors?.description?.message}
       >
         <Textarea
@@ -126,7 +120,7 @@ function CreateCabinForm({ cabinToEdit = {} }) {
         />
       </FormRow>
 
-      <FormRow lable="Cabin photo">
+      <FormRow label="Cabin photo">
         <FileInput
           id="image"
           disabled={isWorking}
